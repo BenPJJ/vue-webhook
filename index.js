@@ -15,6 +15,9 @@ const server = http.createServer(function (req, res) {
             buffers.push(Buffer.from(buffer));
         });
         req.on("end", function () {
+            console.log(typeof buffers)
+            console.log(buffers)
+            console.log(buffers.length)
             const body = Buffer.concat(buffers);
             const event = req.headers['x-gitHub-event'];
             const signature = req.headers["x-hub-signature"];
