@@ -11,16 +11,13 @@ const server = http.createServer(function (req, res) {
     console.log(req.method, req.url);
     if (req.method === "POST" && req.url == "/webhook") {
         const buffers = [];
+        let size = 0;
         req.on("data", function(buffer) {
-            console.log(buffer)
             buffers.push(buffer);
-            console.log(buffers)
+            size = buffer.length;
         });
         req.on("end", function () {
-            console.log(typeof buffers)
-            console.log(buffers)
-            console.log(buffers.length)
-            const body = Buffer.concat(buffers);
+            const body = Buffer.concat(buffers, size);
             const event = req.headers['x-gitHub-event'];
             const signature = req.headers["x-hub-signature"];
             if (signature !== sign(body)) {
@@ -35,11 +32,13 @@ const server = http.createServer(function (req, res) {
                 console.log("payload:", payload, payload.repository.name);
                 const child = spawn("sh", [`./${payload.repository.name}.sh`]);
                 const buffers = [];
+                let size = 0;
                 child.stdout.on("data", function(buffer) {
-                    buffers.push(Buffer.from(buffer));
+                    buffers.push(buffer);
+                    size = buffer.length;
                 });
                 child.stdout.on("end", function() {
-                    const log = Buffer.concat(buffers);
+                    const log = Buffer.concat(buffers, size);
                     console.log(log);
                 });
             }
