@@ -12,7 +12,9 @@ const server = http.createServer(function (req, res) {
     if (req.method === "POST" && req.url == "/webhook") {
         const buffers = [];
         req.on("data", function(buffer) {
-            buffers.push(Buffer.from(buffer));
+            console.log(buffer)
+            buffers.push(buffer);
+            console.log(buffers)
         });
         req.on("end", function () {
             console.log(typeof buffers)
