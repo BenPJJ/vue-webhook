@@ -24,7 +24,7 @@ const server = http.createServer(function (req, res) {
             res.setHeader("Content-Type", "application/json");
             res.end(JSON.stringify({ok: true}));
 
-            if (event === "push") {
+            if (event == "push") {
                 const payload = JSON.parse(body);
                 const child = spawn("sh", [`./${payload.repository.name}.sh`]);
                 const buffers = [];
