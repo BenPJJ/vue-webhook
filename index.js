@@ -11,13 +11,13 @@ const server = http.createServer(function (req, res) {
     console.log(req.method, req.url);
     if (req.method === "POST" && req.url == "/webhook") {
         const buffers = [];
-        let size = 0;
         req.on("data", function(buffer) {
+            console.log(buffer);
             buffers.push(buffer);
-            size = buffer.length;
         });
+        console.log(buffers);
         req.on("end", function () {
-            const body = Buffer.concat(buffers, size);
+            const body = Buffer.concat(buffers);
             const event = req.headers['x-gitHub-event'];
             const signature = req.headers["x-hub-signature"];
             if (signature !== sign(body)) {
