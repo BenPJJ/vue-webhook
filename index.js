@@ -1,4 +1,5 @@
 const http = require("http");
+const { spawn } = require("child_process");
 const crypto = require("crypto");
 let SECRET = "123456";
 
@@ -20,9 +21,23 @@ const server = http.createServer(function (req, res) {
             if (signature !== sign(body)) {
                 return res.end("Not Allowed");
             }
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ok: true}));
+
+            if (event === "push") {
+                const payload = JSON.parse(body);
+                const child = spawn("sh", [`./${payload.repository.name}.sh`]);
+                const buffers = [];
+                child.stdout.on("data", function(buffer) {
+                    buffers.push(buffer);
+                });
+                child.stdout.on("end", function(buffer) {
+                    const log = Buffer.concat(buffers);
+                    console.log(log);
+                });
+            }
         });
-        res.setHeader("Content-Type", "application/json");
-        res.end(JSON.stringify({ok: true}));
+        
     } else {
         res.end("Not Found");
     }
