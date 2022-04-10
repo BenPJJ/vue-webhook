@@ -7,6 +7,7 @@ git clean -f
 echo "拉取最新代码"
 git pull origin master
 echo "编译"
+node node_modules/esbuild/install.js
 npm run build
 echo "开始执行构建"
 docker build -t vue-front:1.0 .
