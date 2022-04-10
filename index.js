@@ -14,7 +14,7 @@ const server = http.createServer(function (req, res) {
         req.on("data", function(buffer) {
             buffers.push(buffer);
         });
-        req.on("end", function (buffer) {
+        req.on("end", function () {
             let body = Buffer.concat(buffers);
             const event = req.headers['x-gitHub-event'];
             const signature = req.headers["x-hub-signature"];
@@ -25,13 +25,15 @@ const server = http.createServer(function (req, res) {
             res.end(JSON.stringify({ok: true}));
 
             if (event == "push") {
+                console.log("event:", event == "push")
                 const payload = JSON.parse(body);
+                console.log("payload:", payload, payload.repository.name);
                 const child = spawn("sh", [`./${payload.repository.name}.sh`]);
                 const buffers = [];
                 child.stdout.on("data", function(buffer) {
                     buffers.push(buffer);
                 });
-                child.stdout.on("end", function(buffer) {
+                child.stdout.on("end", function() {
                     const log = Buffer.concat(buffers);
                     console.log(log);
                 });
